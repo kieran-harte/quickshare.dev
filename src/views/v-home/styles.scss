@@ -1,0 +1,11 @@
+div {
+  padding: 10px;
+}
+
+p {
+  color: red;
+
+  &:hover {
+    color: blue;
+  }
+}

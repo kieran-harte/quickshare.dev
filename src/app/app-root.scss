@@ -1,0 +1,17 @@
+:host {
+  --primary-text: #3d4852;
+  --background-primary: #f9f9ff;
+  --icon-fill: #3b3f54;
+  --icon-fill-hover: #262936;
+
+  font-family: 'Ubuntu', sans-serif;
+
+  & > * {
+    display: flex;
+    width: 100%;
+    min-width: 100vw;
+    height: 100%;
+    flex-direction: column;
+    background: var(--background-primary);
+  }
+}

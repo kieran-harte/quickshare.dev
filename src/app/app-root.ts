@@ -1,6 +1,7 @@
 import { html, LitElement, TemplateResult } from 'lit'
 import Router from 'lit-router'
 import { customElement, property } from 'lit/decorators'
+import s from 'litsass:./app-root.scss'
 import routes from './routes'
 
 @customElement('app-root')
@@ -10,10 +11,12 @@ export class AppRoot extends LitElement {
   @property({ type: Object })
   public viewContent: TemplateResult = html``
 
+  static styles = [s]
+
   constructor() {
     super()
 
-    this._router = new Router(this, routes, 'Lit Studio', ' - Lit Studio')
+    this._router = new Router(this, routes, 'QuickShare', ' - QuickShare')
 
     this._router.previousContent = html`<h1>test</h1>`
   }
@@ -25,6 +28,6 @@ export class AppRoot extends LitElement {
   }
 
   render() {
-    return html`<div>${this.viewContent}</div>`
+    return html`${this.viewContent}`
   }
 }

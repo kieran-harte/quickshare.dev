@@ -1,0 +1,20 @@
+div {
+  padding: 10px;
+}
+
+h1#title {
+  color: var(--primary-text, black);
+  text-align: center;
+  margin-top: 100px;
+}
+
+#container {
+  flex-grow: 1;
+}
+
+#actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 48px;
+}

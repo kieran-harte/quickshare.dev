@@ -1,2 +1,1 @@
-# lit-template
- Lit web app template
+# quickshare.dev

@@ -1,9 +1,10 @@
 import 'components/c-button'
+import 'components/c-header'
 import 'components/c-link'
 import 'components/c-login-form'
 import { html, LitElement } from 'lit'
-import { customElement, property } from 'lit/decorators'
-import s from 'litsass:./styles.scss'
+import { customElement } from 'lit/decorators'
+import s from 'litsass:./v-home.scss'
 
 @customElement('v-home')
 export class Home extends LitElement {
@@ -11,26 +12,22 @@ export class Home extends LitElement {
     super()
   }
 
-  @property({ type: String })
-  private text: string = 'button'
-
   static styles = [s]
 
   render() {
     return html`
-      <p>Home page</p>
+      <c-header><p slot="left">QickShare.dev</p> </c-header>
 
-      <div>
-        Login:
-        <c-login-form></c-login-form>
+      <div id="container">
+        <h1 id="title">Instant Real-Time Code Sharing</h1>
+
+        <div id="actions">
+          <c-button type="action">Join Session</c-button>
+          <c-link to="/code">
+            <c-button type="action">+ New Session</c-button>
+          </c-link>
+        </div>
       </div>
-
-      <div>
-        Button:
-        <c-button text="A button"></c-button>
-      </div>
-
-      <c-link to="/about">go to about</c-link>
     `
   }
 }

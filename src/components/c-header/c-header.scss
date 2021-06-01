@@ -1,0 +1,32 @@
+:host {
+  & > #header {
+    box-sizing: border-box;
+    width: 100%;
+    height: 56px;
+    display: flex;
+    background: white;
+    padding-left: 28px;
+    padding-right: 28px;
+    position: relative;
+    z-index: 2;
+  }
+
+  & > #shadow {
+    width: 100%;
+    height: 55px;
+    background: transparent;
+    display: block;
+    margin: auto;
+    position: absolute;
+    left: 0px;
+    top: -1px;
+    border-radius: 25%;
+    box-shadow: #1a1e2e40 0px 0px 20px;
+    z-index: 1;
+  }
+
+  ::slotted([slot='left']) {
+    display: flex;
+    align-items: center;
+  }
+}

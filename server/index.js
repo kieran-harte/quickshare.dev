@@ -21,6 +21,7 @@ const app = express()
 // Init socket.io
 const http = require('http').createServer(app)
 const io = require('socket.io')(http)
+require('./websocket').init(io)
 
 // Middleware
 app.use(express.json())
@@ -39,6 +40,7 @@ const limiter = rateLimit({
 app.use(limiter)
 
 // Mount API routes
+// app.use('/api/v1/session', require('./routes/session'))
 
 //
 // Front-end
@@ -59,7 +61,7 @@ app.get('*', (req, res) => {
 // app.use(errorHandler)
 
 // Start server
-const server = app.listen(
+const server = http.listen(
   PORT,
   console.log(`Server started on port ${PORT}`.yellow.bold)
 )

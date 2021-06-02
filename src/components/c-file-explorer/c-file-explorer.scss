@@ -1,0 +1,19 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  width: 256px;
+  border-right: 1px solid #ccc;
+
+  & > .file {
+    padding: 8px 16px;
+    cursor: pointer;
+    background: #f9f9ff;
+    &:hover {
+      background: #e8f0fe;
+    }
+
+    &[active] {
+      background: #e4ebf8;
+    }
+  }
+}

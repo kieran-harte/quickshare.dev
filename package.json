@@ -27,7 +27,9 @@
   ],
   "dependencies": {
     "@babel/plugin-transform-runtime": "^7.13.15",
+    "@types/codemirror": "^5.60.0",
     "@types/wicg-file-system-access": "^2020.9.1",
+    "codemirror": "^5.61.1",
     "colors": "^1.4.0",
     "cookie-parser": "^1.4.5",
     "cors": "^2.8.5",

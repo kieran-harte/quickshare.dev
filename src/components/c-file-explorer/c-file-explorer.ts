@@ -16,6 +16,10 @@ export class CFileExplorer extends LitElement {
     super()
   }
 
+  firstUpdated(_changedProperties) {
+    this._fileClicked(this.files[0])
+  }
+
   render() {
     return html`${this.files.map(
       (item) =>

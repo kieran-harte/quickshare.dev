@@ -19,4 +19,10 @@
     justify-content: start;
     padding-top: 42px;
   }
+
+  & > #editorContainer {
+    display: flex;
+    flex-direction: row;
+    flex-grow: 1;
+  }
 }

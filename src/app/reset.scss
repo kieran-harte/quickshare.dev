@@ -9,11 +9,12 @@ body {
   height: 100%;
 }
 
-// .CodeMirror {
-//   font-family: 'Courier New', Courier, monospace !important;
-//   font-size: 16px;
-// }
+.CodeMirror {
+  font-family: 'Courier New', Courier, monospace !important;
+  font-size: 16px;
+}
 
-// #code {
-//   display: none;
-// }
+#code {
+  position: absolute;
+  overflow: hidden;
+}

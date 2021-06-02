@@ -1,5 +1,5 @@
-import CodeMirror from 'codemirror'
 import 'components/c-button'
+import 'components/c-editor'
 import 'components/c-file-explorer'
 import 'components/c-header'
 import 'components/c-icon'
@@ -19,9 +19,6 @@ export class VCode extends LitElement {
   private _socket: Socket = io()
 
   @state()
-  private _codeMirror
-
-  @state()
   private _menuOpen = false
 
   @state()
@@ -30,23 +27,15 @@ export class VCode extends LitElement {
   @state()
   private _files: { handle: FileSystemFileHandle }[] = []
 
+  @state()
+  private _currentCode = ''
+
   constructor() {
     super()
 
     this._socket = this._socket.on('connect', () => {
       console.log('connected')
     })
-
-    this._codeMirror = CodeMirror(
-      document.querySelector('#code') as HTMLElement,
-      {
-        value: 'function myScript(){return 100;}\n',
-        mode: 'javascript',
-        lineNumbers: true,
-      }
-    )
-
-    this._codeMirror.getWrapperElement().style.display = 'none'
   }
 
   render() {
@@ -68,7 +57,6 @@ export class VCode extends LitElement {
   }
 
   _renderSession() {
-    console.log(this._files.length)
     if (!this._files.length) {
       return this._renderNoFiles()
     } else {
@@ -94,10 +82,16 @@ export class VCode extends LitElement {
 
   _renderEditor() {
     return html`
-      <c-file-explorer
-        .files=${this._files}
-        @fileClicked=${this._viewFile}
-      ></c-file-explorer>
+      <div id="editorContainer">
+        <c-file-explorer
+          .files=${this._files}
+          @fileClicked=${this._viewFile}
+        ></c-file-explorer>
+        <c-editor
+          @change=${this._contentChanged}
+          .content=${this._currentCode}
+        ></c-editor>
+      </div>
     `
   }
 
@@ -140,7 +134,13 @@ export class VCode extends LitElement {
     const file = await handle.getFile()
     const content = await file.text()
 
-    this._codeMirror.getWrapperElement().style.display = 'block'
-    this._codeMirror.setValue(content)
+    this._currentCode = content
+  }
+
+  _contentChanged(event: CustomEvent) {
+    const newContent = event.detail.content
+
+    console.log(newContent)
+    this._socket.emit('contentChanged', newContent)
   }
 }

@@ -1,4 +1,5 @@
 import 'components/c-button'
+import 'components/c-file-explorer'
 import 'components/c-header'
 import 'components/c-icon'
 import 'components/c-link'
@@ -75,13 +76,42 @@ export class VCode extends LitElement {
   }
 
   _renderFilesChosen() {
+    return html` <c-file-explorer .files=${this._files}></c-file-explorer> `
   }
 
   renderLoading() {
     return html`<h1>Creating session...</h1>`
   }
 
-  _openFolder() {}
+  async _openFolder() {
+    const handle = await window.showDirectoryPicker()
 
-  _openFiles() {}
+    for await (const item of handle.values()) {
+      if (item.kind === 'file') {
+        this._files.push({ handle: item })
+      } else {
+        // TODO traverse subfolders
+      }
+    }
+
+    this.requestUpdate()
+  }
+
+  async _openFiles() {
+    const [handle] = await window.showOpenFilePicker()
+
+    this._files.push({
+      handle,
+    })
+
+    // const file = await handle.getFile()
+    // const content = await file.text()
+    this.requestUpdate()
+  }
+
+  async saveChanges(handle: FileSystemFileHandle) {
+    const writable = await handle.createWritable()
+    await writable.write('changed')
+    await writable.close()
+  }
 }

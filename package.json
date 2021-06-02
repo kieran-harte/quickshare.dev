@@ -42,6 +42,7 @@
     "morgan": "^1.10.0",
     "socket.io": "^4.1.2",
     "socket.io-client": "^4.1.2",
+    "uuid": "^3.4.0",
     "xss-clean": "^0.1.1"
   },
   "devDependencies": {
@@ -60,6 +61,8 @@
   "alias": {
     "components": "./src/components",
     "views": "./src/views",
-    "icons": "./src/icons"
+    "icons": "./src/icons",
+    "node_modules": "./node_modules",
+    "scripts": "./src/scripts"
   }
 }

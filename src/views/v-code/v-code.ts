@@ -9,6 +9,7 @@ import { html, LitElement } from 'lit'
 import { customElement, state } from 'lit/decorators'
 import s from 'litsass:./v-code.scss'
 import { Socket } from 'socket.io-client'
+import { WS } from '../../scripts/socket'
 const io = require('socket.io-client')
 
 @customElement('v-code')
@@ -19,10 +20,13 @@ export class VCode extends LitElement {
   private _socket: Socket = io()
 
   @state()
+  private _ws: WS
+
+  @state()
   private _menuOpen = false
 
   @state()
-  private _loading = false
+  private _loading = true
 
   @state()
   private _files: { handle: FileSystemFileHandle }[] = []
@@ -33,9 +37,15 @@ export class VCode extends LitElement {
   constructor() {
     super()
 
-    this._socket = this._socket.on('connect', () => {
-      console.log('connected')
-    })
+    this._ws = new WS(this, this._socket)
+
+    //TODO !window.params.sessionId
+    // Create a new session
+    if (!window.params.id) {
+      this._ws.createSession()
+    } else {
+      this._ws.rehostSession(window.params.id)
+    }
   }
 
   render() {
@@ -52,7 +62,7 @@ export class VCode extends LitElement {
         </div>
       </c-header>
 
-      ${this._loading ? this.renderLoading() : this._renderSession()}
+      ${!this._ws.sessionId ? this.renderLoading() : this._renderSession()}
     `
   }
 
@@ -68,7 +78,13 @@ export class VCode extends LitElement {
     return html`
       <div id="container">
         <h1>Session Created</h1>
-        <h2>URL:</h2>
+        <h2>
+          URL:
+          ${window.location.origin +
+          window.location.pathname +
+          '?id=' +
+          this._ws.sessionId}
+        </h2>
         <c-button type="primary" @click=${this._openFolder}>
           Open folder
         </c-button>
@@ -96,6 +112,9 @@ export class VCode extends LitElement {
   }
 
   renderLoading() {
+    if (window.params.id) {
+      return html`<h1>Loading session...</h1>`
+    }
     return html`<h1>Creating session...</h1>`
   }
 

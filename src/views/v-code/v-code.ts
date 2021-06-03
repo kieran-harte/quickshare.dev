@@ -6,7 +6,7 @@ import 'components/c-file-picker'
 import 'components/c-header'
 import 'components/c-icon'
 import 'components/c-link'
-import menuIcon from 'icons/menu'
+import homeIcon from 'icons/home'
 import { html, LitElement } from 'lit'
 import { customElement, state } from 'lit/decorators'
 import s from 'litsass:./v-code.scss'
@@ -60,13 +60,9 @@ export class VCode extends LitElement {
     return html`
       <c-header>
         <div slot="left">
-          <div
-            @click=${() => {
-              this._menuOpen = !this._menuOpen
-            }}
+          <c-icon id="home-icon" @click=${() => window.navigate('/')}
+            >${homeIcon}</c-icon
           >
-            <c-icon id="menu-icon">${menuIcon}</c-icon>
-          </div>
         </div>
 
         <div slot="right">

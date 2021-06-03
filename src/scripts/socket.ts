@@ -59,7 +59,7 @@ export class WS implements ReactiveController {
       (response: { id: string; passcode: string }) => {
         // Check if session was found
         if (!response.id) {
-          window.notif('Session not found')
+          window.notif('Session not found', 'error')
           window.navigate('/')
           return
         }

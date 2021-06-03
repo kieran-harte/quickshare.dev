@@ -46,7 +46,6 @@ export class CClipboard extends LitElement {
       return window.notif('Could not copy', 'error')
     }
     navigator.clipboard.writeText(this.content)
-    window.notif('Copied', 'success')
     this._copied = true
 
     // Revert back to 'Copy' state after 2 seconds

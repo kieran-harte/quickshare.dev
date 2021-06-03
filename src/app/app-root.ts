@@ -1,5 +1,5 @@
+import Router from '@kieranharte/lit-router'
 import { html, LitElement, TemplateResult } from 'lit'
-import Router from 'lit-router'
 import { customElement, property } from 'lit/decorators'
 import s from 'litsass:./app-root.scss'
 import routes from './routes'

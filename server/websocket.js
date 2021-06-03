@@ -5,7 +5,7 @@ module.exports.init = (io) => {
   const sessions = {}
 
   io.on('connection', (socket) => {
-    const ip = socket.handshake.address
+    const ip = socket.handshake.headers['x-real-ip']
     console.log(`New Connection from ${ip}`)
 
     let sessionId = undefined

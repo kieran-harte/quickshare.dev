@@ -1,13 +1,14 @@
 import { html, LitElement } from 'lit'
 import { customElement, property, state } from 'lit/decorators'
 import s from 'litsass:./c-file-explorer.scss'
+import { File } from 'scripts/types'
 
 @customElement('c-file-explorer')
 export class CFileExplorer extends LitElement {
   static styles = [s]
 
   @property({ type: Array })
-  public files: { handle: FileSystemFileHandle }[] = []
+  public files: File[] = []
 
   @state()
   private _activeFile = this.files[0]
@@ -30,14 +31,14 @@ export class CFileExplorer extends LitElement {
             this._fileClicked(item)
           }}
         >
-          ${item.handle.name}
+          ${item.name}
         </div> `
     )}`
   }
 
-  _fileClicked(item: { handle: FileSystemFileHandle }) {
+  _fileClicked(item: File) {
     const evnt = new CustomEvent('fileClicked', {
-      detail: { handle: item.handle },
+      detail: { name: item.name },
       composed: true,
       bubbles: true,
     })

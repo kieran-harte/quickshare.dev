@@ -1,5 +1,5 @@
 import CodeMirror from 'codemirror'
-import { html, LitElement } from 'lit'
+import { html, LitElement, PropertyValues } from 'lit'
 import { customElement, property, state } from 'lit/decorators'
 import s from 'litsass:./c-editor.scss'
 import 'node_modules/codemirror'
@@ -14,6 +14,12 @@ export class CEditor extends LitElement {
 
   @property({ type: String })
   public content: string = ''
+
+  @property({ type: String })
+  public guestContent: string = ''
+
+  @property({ type: Boolean })
+  public isHost: boolean = false
 
   @state()
   private _codeMirror
@@ -42,7 +48,7 @@ export class CEditor extends LitElement {
       document.querySelector('#code') as HTMLElement,
       {
         value: '',
-        orig: 'console.log("original")',
+        orig: 'orig',
         highlightDifferences: true,
         // connect: 'align',
         mode: 'javascript',
@@ -94,9 +100,24 @@ export class CEditor extends LitElement {
     this.dispatchEvent(evnt)
   }
 
-  updated(_changedProperties) {
+  updated(_changedProperties: PropertyValues) {
     this._codeMirror.getWrapperElement().style.display = 'block'
-    this._codeMirror.setValue(this.content)
+
+    if (_changedProperties.has('content')) {
+      if (this.isHost) {
+        this._codeMirror.setValue(this.content)
+      } else {
+        this._mergeView.rightOriginal().setValue(this.content)
+      }
+    }
+
+    if (_changedProperties.has('guestContent')) {
+      if (this.isHost) {
+        this._mergeView.rightOriginal().setValue(this.guestContent)
+      } else {
+        this._codeMirror.setValue(this.guestContent)
+      }
+    }
   }
 
   render() {

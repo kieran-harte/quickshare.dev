@@ -8,8 +8,9 @@ import menuIcon from 'icons/menu'
 import { html, LitElement } from 'lit'
 import { customElement, state } from 'lit/decorators'
 import s from 'litsass:./v-code.scss'
+import { WS } from 'scripts/socket'
+import { File } from 'scripts/types'
 import { Socket } from 'socket.io-client'
-import { WS } from '../../scripts/socket'
 const io = require('socket.io-client')
 
 @customElement('v-code')
@@ -29,17 +30,22 @@ export class VCode extends LitElement {
   private _loading = true
 
   @state()
-  private _files: { handle: FileSystemFileHandle }[] = []
+  private files: File[] = []
 
   @state()
-  private _currentCode = ''
+  private _currentContent = ''
+
+  @state()
+  private _guestContent = ''
+
+  @state()
+  private _currentFileName = ''
 
   constructor() {
     super()
 
     this._ws = new WS(this, this._socket)
 
-    //TODO !window.params.sessionId
     // Create a new session
     if (!window.params.id) {
       this._ws.createSession()
@@ -67,7 +73,7 @@ export class VCode extends LitElement {
   }
 
   _renderSession() {
-    if (!this._files.length) {
+    if (!this.files.length) {
       return this._renderNoFiles()
     } else {
       return this._renderEditor()
@@ -75,13 +81,20 @@ export class VCode extends LitElement {
   }
 
   _renderNoFiles() {
+    if (!this._ws.isHost) {
+      return html` <div id="container">
+        <h1>Joined as guest</h1>
+        <h2>Waiting for host to open a file</h2>
+      </div>`
+    }
+
     return html`
       <p>is host: ${this._ws.isHost}</p>
 
       <div id="container">
         <h1>Session Created</h1>
+        <h2>Invite a guest to review your code:</h2>
         <h2>
-          URL:
           ${window.location.origin +
           window.location.pathname +
           '?id=' +
@@ -104,12 +117,14 @@ export class VCode extends LitElement {
 
       <div id="editorContainer">
         <c-file-explorer
-          .files=${this._files}
+          .files=${this.files}
           @fileClicked=${this._viewFile}
         ></c-file-explorer>
         <c-editor
           @change=${this._contentChanged}
-          .content=${this._currentCode}
+          .content=${this._currentContent}
+          .guestContent=${this._guestContent}
+					.isHost=${this._ws.isHost}
         ></c-editor>
       </div>
     `
@@ -127,11 +142,14 @@ export class VCode extends LitElement {
 
     for await (const item of handle.values()) {
       if (item.kind === 'file') {
-        this._files.push({ handle: item })
+        this.files.push({ handle: item, name: item.name })
       } else {
         // TODO traverse subfolders
       }
     }
+
+    // Send newly opened files to server
+    this._ws.filesOpened(this.files)
 
     this.requestUpdate()
   }
@@ -139,9 +157,13 @@ export class VCode extends LitElement {
   async _openFiles() {
     const [handle] = await window.showOpenFilePicker()
 
-    this._files.push({
+    this.files.push({
       handle,
+      name: handle.name,
     })
+
+    // Send newly opened files to server
+    this._ws.filesOpened(this.files)
 
     this.requestUpdate()
   }
@@ -153,17 +175,52 @@ export class VCode extends LitElement {
   }
 
   async _viewFile(e: CustomEvent) {
-    const handle = e.detail.handle as FileSystemFileHandle
-    const file = await handle.getFile()
-    const content = await file.text()
+    const name = e.detail.name as string
 
-    this._currentCode = content
+    // read from file if haven't already & is host
+    let content
+    const file = this._getFile(name)
+    const handle = file?.handle
+    if (!file?.content && handle) {
+      const file = await handle.getFile()
+      content = await file.text()
+    } else {
+      content = file?.content || ''
+    }
+
+    this._currentFileName = name
+    this._currentContent = content
   }
 
+  // called when codemirror content changes
   _contentChanged(event: CustomEvent) {
-    const newContent = event.detail.content
+    const { content } = event.detail
 
-    console.log(newContent)
-    this._socket.emit('contentChanged', newContent)
+    this.files.forEach((file) => {
+      if (file.name === this._currentFileName) {
+        if (this._ws.isHost) {
+          file.content = content
+        } else {
+          file.guestContent = content
+        }
+      }
+    })
+
+    this._ws.updateFile(this._currentFileName, content)
+  }
+
+  _getFile(name: string) {
+    const f = this.files.find((file: File) => file.name === name)
+    return f
+  }
+
+  // updates the other persons code in the editor
+  updateRemoteEditor() {
+    if (this._ws.isHost) {
+      // Update guests editor
+      this._guestContent = this._getFile(this._currentFileName)?.guestContent || ''
+    } else {
+      this._currentContent = this._getFile(this._currentFileName)?.content || ''
+    }
   }
 }

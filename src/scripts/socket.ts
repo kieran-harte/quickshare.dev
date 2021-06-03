@@ -1,15 +1,21 @@
 import { ReactiveController, ReactiveControllerHost } from 'lit'
+import { File } from 'scripts/types'
 import { Socket } from 'socket.io-client'
 
+interface RCHostWithFiles extends ReactiveControllerHost {
+  files: File[]
+  updateRemoteEditor: () => void
+}
+
 export class WS implements ReactiveController {
-  host: ReactiveControllerHost
+  host: RCHostWithFiles
 
   public socket: Socket
   sessionId: string | undefined
 
   public isHost: boolean = false
 
-  constructor(host: ReactiveControllerHost, socket: Socket) {
+  constructor(host: RCHostWithFiles, socket: Socket) {
     host.addController(this)
     this.host = host
     this.socket = socket
@@ -17,6 +23,10 @@ export class WS implements ReactiveController {
     socket.on('connect', () => {
       console.log('connected')
     })
+
+    socket.on('fileChanged', this._onFileChanged)
+
+    socket.on('initFiles', this._onInitFiles)
   }
 
   hostConnected() {}
@@ -57,9 +67,38 @@ export class WS implements ReactiveController {
         this.sessionId = response.id
         this.isHost = !!passcode
         this.host.requestUpdate()
-
-        console.log('rehost success', response)
       }
     )
+  }
+
+  _onInitFiles = (files: File[]) => {
+    this.host.files = files
+  }
+
+  async filesOpened(files: File[]) {
+    // Get content of each file
+    const filesWithContent = []
+    for await (const file of files) {
+      const content = await (await file.handle.getFile()).text()
+      filesWithContent.push({ name: file.handle.name, content })
+    }
+
+    this.socket.emit('filesOpened', filesWithContent)
+  }
+
+  updateFile(name: string, content: string) {
+    this.socket.emit('updateFile', { name, content })
+  }
+
+  _onFileChanged = (data) => {
+    const { name, content, guestContent } = data
+    this.host.files.forEach((file) => {
+      if (file.name === name) {
+        file.guestContent = guestContent
+        file.content = content
+
+        this.host.updateRemoteEditor()
+      }
+    })
   }
 }

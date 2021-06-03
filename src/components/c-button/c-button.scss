@@ -7,27 +7,31 @@
   align-items: center;
   justify-content: center;
   position: relative;
+  transition: all 200ms cubic-bezier(0.23, 1, 0.32, 1);
 }
 :host([type='action']) {
   padding: 16px 32px;
   background: #f9f9ff;
-  background: #e4ebf8;
+  background: var(--button-action-background, #e4ebf8);
   margin: 8px;
   border-radius: 8px;
   min-width: 90px;
   font-weight: 600;
   color: var(--text-primary, black);
-  transition: all 200ms cubic-bezier(0.23, 1, 0.32, 1);
   box-shadow: 0px 2px 2px #15161841;
   font-size: 18px;
 }
 :host([type='action']:hover) {
-  opacity: 0.8;
+  opacity: 0.85;
   box-shadow: 0px 1px 1px #15161841;
 }
 
 :host([type='primary']) {
-  background: rgb(36, 43, 58);
+  background: var(--button-primary-background, #242b3a);
   border-radius: 8px;
   color: white;
+}
+
+:host([type='primary']:hover) {
+  opacity: 0.85;
 }

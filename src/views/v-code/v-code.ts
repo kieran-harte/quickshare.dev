@@ -1,4 +1,5 @@
 import 'components/c-button'
+import 'components/c-clipboard'
 import 'components/c-editor'
 import 'components/c-file-explorer'
 import 'components/c-header'
@@ -94,12 +95,12 @@ export class VCode extends LitElement {
       <div id="container">
         <h1>Session Created</h1>
         <h2>Invite a guest to review your code:</h2>
-        <h2>
-          ${window.location.origin +
+        <c-clipboard
+          .content=${window.location.origin +
           window.location.pathname +
           '?id=' +
           this._ws.sessionId}
-        </h2>
+        ></c-clipboard>
         <c-button type="primary" @click=${this._openFolder}>
           Open folder
         </c-button>

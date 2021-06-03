@@ -44,7 +44,7 @@ export class VCode extends LitElement {
     if (!window.params.id) {
       this._ws.createSession()
     } else {
-      this._ws.rehostSession(window.params.id)
+      this._ws.joinSession(window.params.id)
     }
   }
 
@@ -76,6 +76,8 @@ export class VCode extends LitElement {
 
   _renderNoFiles() {
     return html`
+      <p>is host: ${this._ws.isHost}</p>
+
       <div id="container">
         <h1>Session Created</h1>
         <h2>
@@ -98,6 +100,8 @@ export class VCode extends LitElement {
 
   _renderEditor() {
     return html`
+      <p>is host: ${this._ws.isHost}</p>
+
       <div id="editorContainer">
         <c-file-explorer
           .files=${this._files}

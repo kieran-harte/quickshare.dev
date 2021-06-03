@@ -2,6 +2,7 @@ const uuid = require('uuid')
 
 module.exports.init = (io) => {
   // let users =
+  const sessions = {}
 
   io.on('connection', (socket) => {
     const ip = socket.handshake.address
@@ -11,18 +12,32 @@ module.exports.init = (io) => {
 
     socket.on('newSession', (callback) => {
       sessionId = uuid.v4()
-      callback({ id: sessionId })
+      const passcode = uuid.v4()
+
+      sessions[sessionId] = {
+        passcode,
+      }
+
+      callback({ id: sessionId, passcode })
     })
 
-    socket.on('rehostSession', (data, callback) => {
-      console.log('rehost', data.id)
-      // TODO check that they are the host
-      sessionId = data.id
-      callback({ id: sessionId })
-    })
+    socket.on('joinSession', (data, callback) => {
+      console.log('join', data)
+      const { id, passcode } = data
 
-    socket.on('joinSession', (data) => {
-      // TODO connect to session
+      sessionId = id
+
+      // Check if session exists
+      if (!sessions.hasOwnProperty(id)) return callback({})
+
+      // Check they own the session
+      if (sessions[id].passcode === passcode) {
+        // Is host
+        callback({ id, passcode })
+      } else {
+        // Not host
+        callback({ id })
+      }
     })
 
     socket.on('contentChanged', (data) => {

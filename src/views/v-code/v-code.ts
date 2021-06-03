@@ -90,8 +90,6 @@ export class VCode extends LitElement {
     }
 
     return html`
-      <p>is host: ${this._ws.isHost}</p>
-
       <div id="container">
         <h1>Session Created</h1>
         <h2>Invite a guest to review your code:</h2>
@@ -114,8 +112,6 @@ export class VCode extends LitElement {
 
   _renderEditor() {
     return html`
-      <p>is host: ${this._ws.isHost}</p>
-
       <div id="editorContainer">
         <c-file-explorer
           .files=${this.files}
@@ -132,10 +128,9 @@ export class VCode extends LitElement {
   }
 
   renderLoading() {
-    if (window.params.id) {
-      return html`<h1>Loading session...</h1>`
-    }
-    return html`<h1>Creating session...</h1>`
+    return html`<div id="container" class="loading">
+      <h1>${window.params.id ? 'Loading' : 'Creating'} session...</h1>
+    </div>`
   }
 
   async _openFolder() {

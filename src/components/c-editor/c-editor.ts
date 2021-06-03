@@ -66,8 +66,15 @@ export class CEditor extends LitElement {
 
   connectedCallback() {
     super.connectedCallback()
+  }
 
-    this._observer.observe(this)
+  firstUpdated(_changedProperties) {
+    const placeholder = this.shadowRoot!.querySelector('#editorPlaceholder')!
+    if (placeholder) {
+      this._observer.observe(placeholder)
+    } else {
+      window.notif('Problem loading editor', 'error')
+    }
   }
 
   _sizeChanged = (entries: ResizeObserverEntry[]) => {
@@ -121,6 +128,12 @@ export class CEditor extends LitElement {
   }
 
   render() {
-    return html``
+    return html`
+      <div id="headers">
+        <div id="left"><p>Me</p></div>
+        <div id="right"><p>${this.isHost ? 'Guest' : 'Host'}</p></div>
+      </div>
+      <div id="editorPlaceholder"></div>
+    `
   }
 }

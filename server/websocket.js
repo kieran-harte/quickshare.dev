@@ -44,6 +44,8 @@ module.exports.init = (io) => {
 
     socket.on('filesOpened', (data) => {
       // TODO send check passcode
+      if (!sessions.hasOwnProperty(sessionId)) return
+
       sessions[sessionId].files = data
       initGuest()
     })

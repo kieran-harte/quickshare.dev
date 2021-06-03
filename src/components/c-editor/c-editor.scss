@@ -1,3 +1,30 @@
 :host {
   flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+
+  & > #headers {
+    display: flex;
+    align-items: stretch;
+
+    & > #left,
+    & > #right {
+      width: 50%;
+
+      & > p {
+        font-size: 18px;
+        font-weight: bold;
+        padding: 8px 16px;
+        margin: 8px;
+      }
+    }
+
+    & > #right {
+      text-align: right;
+    }
+  }
+
+  & > #editorPlaceholder {
+    flex-grow: 1;
+  }
 }

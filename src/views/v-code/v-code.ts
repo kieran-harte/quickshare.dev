@@ -2,6 +2,7 @@ import 'components/c-button'
 import 'components/c-clipboard'
 import 'components/c-editor'
 import 'components/c-file-explorer'
+import 'components/c-file-picker'
 import 'components/c-header'
 import 'components/c-icon'
 import 'components/c-link'
@@ -99,13 +100,8 @@ export class VCode extends LitElement {
           '?id=' +
           this._ws.sessionId}
         ></c-clipboard>
-        <c-button type="primary" @click=${this._openFolder}>
-          Open folder
-        </c-button>
-        <p>Or</p>
-        <c-button type="primary" @click=${this._openFiles}>
-          Open files
-        </c-button>
+
+        <c-file-picker @files-picked=${this._filesPicked}></c-file-picker>
       </div>
     `
   }
@@ -133,34 +129,11 @@ export class VCode extends LitElement {
     </div>`
   }
 
-  async _openFolder() {
-    const handle = await window.showDirectoryPicker()
-
-    for await (const item of handle.values()) {
-      if (item.kind === 'file') {
-        this.files.push({ handle: item, name: item.name })
-      } else {
-        // TODO traverse subfolders
-      }
-    }
-
+  _filesPicked(e: { detail: { files: File[] } }) {
+    const { files } = e.detail
+    this.files = files
     // Send newly opened files to server
     this._ws.filesOpened(this.files)
-
-    this.requestUpdate()
-  }
-
-  async _openFiles() {
-    const [handle] = await window.showOpenFilePicker()
-
-    this.files.push({
-      handle,
-      name: handle.name,
-    })
-
-    // Send newly opened files to server
-    this._ws.filesOpened(this.files)
-
     this.requestUpdate()
   }
 

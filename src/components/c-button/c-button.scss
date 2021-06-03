@@ -35,3 +35,10 @@
 :host([type='primary']:hover) {
   opacity: 0.85;
 }
+
+:host([disabled]) {
+  background: var(--button-disabled-background, lightgray);
+  color: var(--button-disabled-color, darkgray);
+  cursor: default;
+  pointer-events: none;
+}

@@ -1,4 +1,5 @@
 import CodeMirror from 'codemirror'
+import 'components/c-button'
 import { html, LitElement, PropertyValues } from 'lit'
 import { customElement, property, state } from 'lit/decorators'
 import s from 'litsass:./c-editor.scss'
@@ -30,6 +31,12 @@ export class CEditor extends LitElement {
   @state()
   private _observer: ResizeObserver
 
+  // Keeping track so can see if changed since last save
+  @state()
+  private _currentContent = ''
+  @state()
+  private _lastSavedContent: string | undefined
+
   constructor() {
     super()
 
@@ -53,6 +60,7 @@ export class CEditor extends LitElement {
         // connect: 'align',
         mode: 'javascript',
         lineNumbers: true,
+        lineWrapping: true,
         // theme: 'panda-syntax',
       }
     )
@@ -96,15 +104,20 @@ export class CEditor extends LitElement {
 
   _valueChanged = (instance: CodeMirror.Editor, changeObj: object) => {
     // Fire event containing new editor content whenever it changes
+    const content = instance.getValue()
     const evnt = new CustomEvent('change', {
       detail: {
-        content: instance.getValue(),
+        content,
       },
       composed: true,
       bubbles: true,
     })
 
     this.dispatchEvent(evnt)
+
+    // Keep track of current value
+    this._currentContent = content
+    if (this._lastSavedContent === undefined) this._lastSavedContent = content
   }
 
   updated(_changedProperties: PropertyValues) {
@@ -127,10 +140,32 @@ export class CEditor extends LitElement {
     }
   }
 
+  _save() {
+    this.dispatchEvent(
+      new CustomEvent('save', {
+        composed: true,
+      })
+    )
+
+    this._lastSavedContent = this._currentContent
+  }
+
   render() {
     return html`
       <div id="headers">
-        <div id="left"><p>Me</p></div>
+        <div id="left">
+          <p>Me</p>
+          ${this.isHost
+            ? html`
+                <c-button
+                  type="primary"
+                  @click=${this._save}
+                  ?disabled=${this._lastSavedContent === this._currentContent}
+                  >Save</c-button
+                >
+              `
+            : ''}
+        </div>
         <div id="right"><p>${this.isHost ? 'Guest' : 'Host'}</p></div>
       </div>
       <div id="editorPlaceholder"></div>

@@ -70,7 +70,7 @@ export class VCode extends LitElement {
         </div>
 
         <div slot="right">
-          ${this.files.length
+          ${this.files.length && this._ws.isHost
             ? html`
                 <c-clipboard
                   type="button"
@@ -128,6 +128,7 @@ export class VCode extends LitElement {
         ></c-file-explorer>
         <c-editor
           @change=${this._contentChanged}
+          @save=${this._saveFile}
           .content=${this._currentContent}
           .guestContent=${this._guestContent}
           .isHost=${this._ws.isHost}
@@ -150,10 +151,18 @@ export class VCode extends LitElement {
     this.requestUpdate()
   }
 
-  async saveChanges(handle: FileSystemFileHandle) {
-    const writable = await handle.createWritable()
-    await writable.write('changed')
+  async _saveFile() {
+    const file = this.files.find((file) => file.name === this._currentFileName)
+    if (!file || !file.handle) {
+      window.notif('Could not save', 'error')
+      return
+    }
+
+    const writable = await file.handle.createWritable()
+    await writable.write(file.content || '')
     await writable.close()
+
+    window.notif('Successfully saved', 'success')
   }
 
   async _viewFile(e: CustomEvent) {

@@ -75,12 +75,17 @@ export class WS implements ReactiveController {
     this.host.files = files
   }
 
+  // New files opened from host's computer
   async filesOpened(files: File[]) {
     // Get content of each file
     const filesWithContent = []
     for await (const file of files) {
       const content = await (await file.handle.getFile()).text()
-      filesWithContent.push({ name: file.handle.name, content })
+      filesWithContent.push({
+        name: file.handle.name,
+        content,
+        guestContent: content,
+      })
     }
 
     this.socket.emit('filesOpened', filesWithContent)

@@ -124,7 +124,7 @@ export class VCode extends LitElement {
           @change=${this._contentChanged}
           .content=${this._currentContent}
           .guestContent=${this._guestContent}
-					.isHost=${this._ws.isHost}
+          .isHost=${this._ws.isHost}
         ></c-editor>
       </div>
     `
@@ -178,24 +178,28 @@ export class VCode extends LitElement {
     const name = e.detail.name as string
 
     // read from file if haven't already & is host
-    let content
+    let content, guestContent
     const file = this._getFile(name)
     const handle = file?.handle
     if (!file?.content && handle) {
       const file = await handle.getFile()
       content = await file.text()
+      // guestContent = content
     } else {
       content = file?.content || ''
+      guestContent = file?.guestContent || ''
     }
 
     this._currentFileName = name
     this._currentContent = content
+    this._guestContent = guestContent || ''
   }
 
   // called when codemirror content changes
   _contentChanged(event: CustomEvent) {
     const { content } = event.detail
 
+    // Update files property with new content
     this.files.forEach((file) => {
       if (file.name === this._currentFileName) {
         if (this._ws.isHost) {
@@ -206,6 +210,7 @@ export class VCode extends LitElement {
       }
     })
 
+    // Emit update to other person
     this._ws.updateFile(this._currentFileName, content)
   }
 
@@ -218,7 +223,8 @@ export class VCode extends LitElement {
   updateRemoteEditor() {
     if (this._ws.isHost) {
       // Update guests editor
-      this._guestContent = this._getFile(this._currentFileName)?.guestContent || ''
+      this._guestContent =
+        this._getFile(this._currentFileName)?.guestContent || ''
     } else {
       this._currentContent = this._getFile(this._currentFileName)?.content || ''
     }

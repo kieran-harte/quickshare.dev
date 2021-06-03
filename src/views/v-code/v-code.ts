@@ -68,6 +68,19 @@ export class VCode extends LitElement {
             <c-icon id="menu-icon">${menuIcon}</c-icon>
           </div>
         </div>
+
+        <div slot="right">
+          ${this.files.length
+            ? html`
+                <c-clipboard
+                  type="button"
+                  .labels=${{ normal: 'Copy URL', copied: 'Copied!' }}
+                  content=${window.location.href}
+                  >Copy URL</c-clipboard
+                >
+              `
+            : ''}
+        </div>
       </c-header>
 
       ${!this._ws.sessionId ? this.renderLoading() : this._renderSession()}

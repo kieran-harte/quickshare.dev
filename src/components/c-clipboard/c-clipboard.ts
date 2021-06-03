@@ -9,6 +9,15 @@ export class CClipboard extends LitElement {
   @property({ type: String })
   public content: string | undefined
 
+  @property({ type: String, reflect: true })
+  public type: 'full' | 'button' = 'full'
+
+  @property({ type: Object })
+  public labels: { normal: string; copied: string } = {
+    normal: 'Copy',
+    copied: 'Copied!',
+  }
+
   @state()
   private _copied = false
 
@@ -20,9 +29,13 @@ export class CClipboard extends LitElement {
 
   render() {
     return html`
-      <div id="content" ?copied=${this._copied}>${this.content}</div>
+      ${this.type === 'full'
+        ? html`
+            <div id="content" ?copied=${this._copied}>${this.content}</div>
+          `
+        : ''}
       <c-button type="primary" @click=${this._onClick} ?copied=${this._copied}
-        >${this._copied ? 'Copied' : 'Copy'}</c-button
+        >${this._copied ? this.labels.copied : this.labels.normal}</c-button
       >
     `
   }

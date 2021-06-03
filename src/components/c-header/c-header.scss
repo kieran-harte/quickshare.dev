@@ -9,6 +9,7 @@
     padding-right: 28px;
     position: relative;
     z-index: 2;
+    align-items: center;
   }
 
   & > #shadow {
@@ -28,5 +29,6 @@
   ::slotted([slot='left']) {
     display: flex;
     align-items: center;
+    flex-grow: 1;
   }
 }

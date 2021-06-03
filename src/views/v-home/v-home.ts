@@ -22,7 +22,6 @@ export class Home extends LitElement {
         <h1 id="title">Instant Real-Time Code Sharing</h1>
 
         <div id="actions">
-          <c-button type="action">Join Session</c-button>
           <c-link to="/code">
             <c-button type="action">+ New Session</c-button>
           </c-link>

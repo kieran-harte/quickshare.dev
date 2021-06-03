@@ -66,9 +66,7 @@ export class CFilePicker extends LitElement {
       <c-button type="primary" @click=${this._openFolder}>
         Open folder
       </c-button>
-      <c-button type="primary" @click=${this._openFiles}>
-        Open files
-      </c-button>`
+      <c-button type="primary" @click=${this._openFiles}> Open file </c-button>`
   }
 
   _filesPicked() {

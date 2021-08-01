@@ -42,15 +42,6 @@ export class CEditor extends LitElement {
 
     this._observer = new ResizeObserver(this._sizeChanged)
 
-    // this._codeMirror = CodeMirror(
-    //   document.querySelector('#code') as HTMLElement,
-    //   {
-    //     value: '',
-    //     mode: 'javascript',
-    //     lineNumbers: true,
-    //     theme: 'panda-syntax',
-    //   }
-    // )
     this._mergeView = CodeMirror.MergeView(
       document.querySelector('#code') as HTMLElement,
       {
